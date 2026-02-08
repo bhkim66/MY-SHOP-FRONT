@@ -1,0 +1,134 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.2.0'
+    id 'io.spring.dependency-management' version '1.1.4'
+}
+
+group = 'com.myshop'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = '17'
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Spring Boot Starters
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    // Database
+    runtimeOnly 'com.h2database:h2'                    // 개발/테스트용
+    runtimeOnly 'org.postgresql:postgresql'            // 운영용 (변경 가능)
+    // runtimeOnly 'com.oracle.database.jdbc:ojdbc11'  // Oracle 사용 시
+
+    // MyBatis (JPA와 병행 사용)
+    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
+
+    // QueryDSL (복잡한 동적 쿼리용)
+    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+    annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'
+    annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
+    annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
+
+    // Lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // MapStruct (DTO 변환)
+    implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+
+    // Swagger/OpenAPI
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
+
+    // JWT
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.3'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.3'
+
+    // Reflections (Entity 자동 스캔용) - DBML 생성에 사용
+    implementation 'org.reflections:reflections:0.10.2'
+
+    // Test
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+// ============================================
+// 🔧 DBML 자동 생성 Gradle Task
+// ============================================
+tasks.register('generateDbml', JavaExec) {
+    group = 'documentation'
+    description = 'JPA Entity 클래스에서 DBML 파일을 자동 생성합니다.'
+
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'com.myshop.common.dbml.DbmlGenerator'
+
+    doFirst {
+        println '🔄 DBML 생성 시작...'
+    }
+
+    doLast {
+        println '✅ DBML 생성 완료: database/schema_generated.dbml'
+        println '💡 dbdocs build database/schema_generated.dbml --project my-shop 명령으로 배포하세요.'
+    }
+}
+
+// 빌드 전 DBML 자동 생성 (선택적)
+// tasks.named('build') {
+//     dependsOn 'generateDbml'
+// }
+
+// ============================================
+// 🔧 dbdocs 배포 Task (npm dbdocs 설치 필요)
+// ============================================
+tasks.register('deployDbml', Exec) {
+    group = 'documentation'
+    description = 'DBML 파일을 dbdocs.io에 배포합니다.'
+
+    dependsOn 'generateDbml'
+
+    workingDir project.projectDir
+    commandLine 'dbdocs', 'build', 'database/schema_generated.dbml', '--project', 'my-shop-front'
+
+    doFirst {
+        println '🚀 dbdocs 배포 시작...'
+    }
+
+    doLast {
+        println '✅ dbdocs 배포 완료!'
+    }
+}
+
+// ============================================
+// QueryDSL 설정
+// ============================================
+def querydslDir = "$buildDir/generated/querydsl"
+
+sourceSets {
+    main.java.srcDirs += [ querydslDir ]
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.getGeneratedSourceOutputDirectory().set(file(querydslDir))
+}
+
+clean.doLast {
+    file(querydslDir).deleteDir()
+}
