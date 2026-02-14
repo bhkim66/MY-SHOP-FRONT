@@ -3,12 +3,12 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as authAPI from '../../api/auth.api';
+import * as memberAPI from '../../api/member.api';
 import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
 
 // 유효성 검사 스키마
-const registerSchema = yup.object({
+const signupSchema = yup.object({
     email: yup
         .string()
         .required('이메일을 입력해주세요')
@@ -39,7 +39,7 @@ const registerSchema = yup.object({
         .oneOf(['BUYER', 'SELLER'], '유효하지 않은 역할입니다'),
 });
 
-function RegisterPage() {
+function SignupPage() {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
     const [apiError, setApiError] = useState('');
@@ -49,7 +49,7 @@ function RegisterPage() {
         handleSubmit,
         formState: { errors },
     } = useForm({
-        resolver: yupResolver(registerSchema),
+        resolver: yupResolver(signupSchema),
         defaultValues: {
             role: 'BUYER',
         },
@@ -60,7 +60,7 @@ function RegisterPage() {
         setApiError('');
 
         try {
-            await authAPI.register({
+            await memberAPI.signup({
                 email: data.email,
                 password: data.password,
                 name: data.name,
@@ -72,7 +72,7 @@ function RegisterPage() {
             alert('회원가입이 완료되었습니다. 로그인해주세요.');
             navigate('/login');
         } catch (error) {
-            console.error('Register error:', error);
+            console.error('Signup error:', error);
             setApiError(
                 error.response?.data?.message || '회원가입 중 오류가 발생했습니다. 다시 시도해주세요.'
             );
@@ -224,4 +224,4 @@ function RegisterPage() {
     );
 }
 
-export default RegisterPage;
+export default SignupPage;
