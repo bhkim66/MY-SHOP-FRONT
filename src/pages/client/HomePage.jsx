@@ -117,7 +117,7 @@ function HomePage() {
                         MY SHOP에서 당신의 상품을 판매하고 수익을 창출하세요
                     </p>
                     <Link
-                        to="/register"
+                        to="/signup"
                         className="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
                     >
                         판매자 등록하기
