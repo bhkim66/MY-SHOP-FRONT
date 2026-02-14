@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import PrivateRoute from './PrivateRoute';
 import LoginPage from '../pages/auth/LoginPage';
-import SignupPage from '../pages/auth/SignupPage';
+import RegisterPage from '../pages/auth/RegisterPage';
 import HomePage from '../pages/client/HomePage';
 import MainLayout from '../components/layout/MainLayout';
 
@@ -20,7 +20,7 @@ function AppRouter() {
             <Routes>
                 {/* 인증 관련 라우트 */}
                 <Route path="/login" element={<LoginPage />} />
-                <Route path="/signup" element={<SignupPage />} />
+                <Route path="/register" element={<RegisterPage />} />
 
                 {/* 공개 라우트 */}
                 <Route path="/home" element={<HomePage />} />

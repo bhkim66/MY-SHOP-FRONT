@@ -146,7 +146,7 @@ my-shop-front/
 ├── frontend/                 # React 프론트엔드
 │   ├── src/
 │   │   ├── components/       # 재사용 컴포넌트
-│   │   ├── pages/            # 페이지 컴포넌트 (SignupPage.jsx 등)
+│   │   ├── pages/            # 페이지 컴포넌트
 │   │   ├── hooks/            # 커스텀 훅
 │   │   ├── services/         # API 호출
 │   │   ├── store/            # 상태 관리
@@ -236,13 +236,9 @@ npm run build
 ### 인증 API
 ```
 POST   /api/auth/login         # 로그인
+POST   /api/auth/register      # 회원가입
 POST   /api/auth/logout        # 로그아웃
 POST   /api/auth/refresh       # 토큰 갱신
-```
-
-### 회원 API
-```
-POST   /api/members/signup      # 회원가입
 ```
 
 ### 상품 API

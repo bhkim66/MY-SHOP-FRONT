@@ -78,7 +78,7 @@ function Header() {
                                     로그인
                                 </Link>
                                 <Link
-                                    to="/signup"
+                                    to="/register"
                                     className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
                                 >
                                     회원가입
@@ -170,7 +170,7 @@ function Header() {
                                     로그인
                                 </Link>
                                 <Link
-                                    to="/signup"
+                                    to="/register"
                                     className="block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-center"
                                     onClick={() => setMobileMenuOpen(false)}
                                 >

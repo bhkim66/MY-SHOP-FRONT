@@ -123,7 +123,7 @@ function LoginPage() {
 
                         <div className="mt-6 text-center">
                             <Link
-                                to="/signup"
+                                to="/register"
                                 className="text-blue-600 hover:text-blue-500 font-medium"
                             >
                                 계정이 없으신가요? 회원가입
