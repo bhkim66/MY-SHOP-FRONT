@@ -9,9 +9,13 @@ const useAuthStore = create(
             user: null,
             isAuthenticated: false,
             isLoading: false,
+            isInitialized: false,
 
             // 초기화 - 앱 시작 시 토큰이 있으면 사용자 정보 로드
             initialize: async () => {
+                // 이미 초기화되었으면 스킵
+                if (get().isInitialized) return;
+
                 const token = getToken();
                 if (token) {
                     set({ isLoading: true });
@@ -26,6 +30,7 @@ const useAuthStore = create(
                         set({ isLoading: false });
                     }
                 }
+                set({ isInitialized: true });
             },
 
             // 로그인
@@ -33,7 +38,11 @@ const useAuthStore = create(
                 try {
                     const response = await authAPI.login(credentials);
                     setToken(response.accessToken);
-                    set({ user: response.user, isAuthenticated: true });
+
+                    // 로그인 후 사용자 정보 조회
+                    const userData = await authAPI.getCurrentUser();
+                    set({ user: userData, isAuthenticated: true });
+
                     return { success: true };
                 } catch (error) {
                     console.error('로그인 실패:', error);
