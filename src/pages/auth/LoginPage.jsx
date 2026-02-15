@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useAuth } from '../../hooks/useAuth';
+import useAuthStore from '../../store/authStore';
 import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
 
@@ -44,8 +45,15 @@ function LoginPage() {
             });
 
             if (result.success) {
-                // 로그인 성공 시 홈으로 이동
-                navigate('/home');
+                // 로그인 성공 시 역할에 따라 리다이렉트
+                const userState = useAuthStore.getState();
+                const role = userState.user?.role;
+
+                if (role === 'SELLER' || role === 'ADMIN') {
+                    navigate('/seller/dashboard');
+                } else {
+                    navigate('/home');
+                }
             } else {
                 setApiError(result.error || '로그인에 실패했습니다.');
             }
