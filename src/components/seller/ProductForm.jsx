@@ -10,6 +10,7 @@ import Button from '../common/Button';
 import ImageUploader from '../common/ImageUploader';
 import OptionManager from './OptionManager';
 import { PRODUCT_STATUS_OPTIONS, CATEGORY_OPTIONS } from '../../utils/constants';
+import { getCategories } from '../../api/product.api';
 
 const productSchema = yup.object({
     productName: yup.string().required('상품명을 입력해주세요'),
@@ -37,6 +38,8 @@ function ProductForm({ initialData, onSubmit, isLoading }) {
     const [images, setImages] = useState([]);
     const [options, setOptions] = useState([]);
     const [imageError, setImageError] = useState('');
+    const [categoryOptions, setCategoryOptions] = useState(CATEGORY_OPTIONS);
+    const [isCategoryLoading, setIsCategoryLoading] = useState(true);
 
     const {
         register,
@@ -56,6 +59,49 @@ function ProductForm({ initialData, onSubmit, isLoading }) {
             status: 'ON_SALE',
         },
     });
+
+    // 카테고리 API 조회
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                setIsCategoryLoading(true);
+                const response = await getCategories();
+                const categories = response.data || response;
+
+                // 카테고리 데이터를 Map으로 변환 (parentSeq로 부모 찾기 용)
+                const categoryMap = new Map();
+                categories.forEach(cat => {
+                    categoryMap.set(cat.seq, cat);
+                });
+
+                // depth가 2인 카테고리만 필터링하고, 부모 카테고리 이름과 함께 표시
+                const options = categories
+                    .filter(cat => cat.depth === 2)
+                    .sort((a, b) => a.sortOrder - b.sortOrder)
+                    .map(cat => {
+                        const parent = categoryMap.get(cat.parentSeq);
+                        const label = parent
+                            ? `${parent.categoryName} > ${cat.categoryName}`
+                            : cat.categoryName;
+                        return {
+                            value: cat.categoryCode,
+                            label,
+                        };
+                    });
+
+                if (options.length > 0) {
+                    setCategoryOptions(options);
+                }
+            } catch (error) {
+                console.error('카테고리 조회 실패:', error);
+                // 에러 시 폴백으로 기존 상수 사용 (이미 초기값으로 설정됨)
+            } finally {
+                setIsCategoryLoading(false);
+            }
+        };
+
+        fetchCategories();
+    }, []);
 
     useEffect(() => {
         if (initialData) {
@@ -125,9 +171,10 @@ function ProductForm({ initialData, onSubmit, isLoading }) {
                             <Select
                                 label="카테고리"
                                 name="categoryCode"
-                                options={CATEGORY_OPTIONS}
-                                placeholder="카테고리 선택"
+                                options={categoryOptions}
+                                placeholder={isCategoryLoading ? '카테고리 로딩중...' : '카테고리 선택'}
                                 error={errors.categoryCode?.message}
+                                disabled={isCategoryLoading}
                                 {...field}
                             />
                         )}
