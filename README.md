@@ -31,10 +31,10 @@
 
 | 기능 | 설명 | 상태 |
 |------|------|------|
-| 🛍️ 상품 등록 및 관리 | 상품 CRUD, 카테고리 관리, 이미지 업로드 | 🟡 UI 완료 |
-| 🧾 주문/결제/정산 관리 | 주문 목록, 상태 관리, 결제 내역, 정산 조회 | 🟡 UI 완료 |
+| 🛍️ 상품 등록 및 관리 | 상품 CRUD, 카테고리 관리, 이미지 업로드 | ✅ 완료 |
+| 🧾 주문/결제 관리 (MVP) | 주문 생성, 주문 목록, 결제, 주문 취소 | ✅ 완료 |
 | 📊 매출 및 통계 대시보드 | 매출 차트, KPI 지표, 인기 상품 분석 | 🟡 UI 완료 |
-| 🔐 사용자 인증 및 권한 관리 | 로그인/회원가입, 판매자/고객 권한 분리 | 🟡 UI 완료 |
+| 🔐 사용자 인증 및 권한 관리 | 로그인/회원가입, 판매자/고객 권한 분리 | ✅ 완료 |
 | 💻 AI 기반 마켓 설명 서비스 | 상품 설명 자동 생성, AI 챗봇 고객 응대 | 🟡 UI 완료 |
 
 ---
@@ -43,23 +43,23 @@
 
 ### 🛍️ 고객용 쇼핑몰 (ClientShop)
 
-#### 홈 화면
-- 메인 배너 슬라이더 (자동 전환)
-- 카테고리 네비게이션
-- 베스트 상품, 특가 상품, 신상품 섹션
+#### 1. 상품 탐색
+- **상품 목록** (`ProductListPage`): 전체 상품 조회, 페이지네이션
+- **상품 상세** (`ProductDetailPage`): 상품 정보, 이미지 갤러리, 수량 선택, 구매하기
 
-#### 상품
-- 상품 목록 (필터링, 정렬)
-- 상품 상세 (이미지 갤러리, 리뷰, 수량 선택)
-- 찜하기 기능
+#### 2. 주문 및 결제 (Phase 1 MVP)
+- **주문서 작성** (`OrderFormPage`): 주문 상품 확인, 배송지 입력
+- **결제** (`PaymentPage`): 결제 수단 선택 (카드/계좌이체/가상계좌), 결제 진행
+- **주문 완료** (`OrderCompletePage`): 주문 완료 안내, 주문 번호 표시
+- **내 주문 목록** (`MyOrdersPage`): 주문 내역 조회, 페이지네이션
+- **주문 상세** (`OrderDetailPage`): 주문 상세 정보, 배송 정보, 주문 취소
 
-#### 구매
-- 장바구니 (슬라이드 패널)
-- 주문/결제 (배송정보, 결제수단 선택)
-
-#### 사용자
-- 로그인/회원가입 (소셜 로그인 UI)
-- 마이페이지
+#### 3. 재사용 컴포넌트
+- **ProductCard**: 상품 카드 컴포넌트 (썸네일, 상품명, 가격)
+- **ProductGrid**: 상품 그리드 레이아웃
+- **AddressForm**: 배송지 입력 폼 (우편번호 검색 포함)
+- **OrderItemList**: 주문 상품 목록 표시
+- **OrderStatusBadge**: 주문 상태 뱃지 (색상별 구분)
 
 ---
 
@@ -130,43 +130,48 @@
 ```
 MY_SHOP_FRONT/
 ├── README.md
-├── package.json              # 앱 이름: my-shop-front
+├── package.json
 ├── public/
-│   └── index.html            # Bootstrap CDN 포함
+│   └── index.html
 └── src/
-    ├── index.js              # 진입점
-    ├── index.css             # 기본 스타일
-    ├── App.js                # 메인 앱 (모드 전환)
-    ├── ClientShop.jsx        # 고객용 쇼핑몰 (1,900+ lines)
-    └── AdminDashboard.jsx    # 관리자 대시보드 (860+ lines)
-```
-
-### 향후 구조 (예정)
-```
-my-shop-front/
-├── frontend/                 # React 프론트엔드
-│   ├── src/
-│   │   ├── components/       # 재사용 컴포넌트
-│   │   ├── pages/            # 페이지 컴포넌트 (SignupPage.jsx 등)
-│   │   ├── hooks/            # 커스텀 훅
-│   │   ├── services/         # API 호출
-│   │   ├── store/            # 상태 관리
-│   │   └── utils/            # 유틸리티
-│   └── ...
-│
-└── backend/                  # Spring Boot 백엔드
-    ├── src/main/java/
-    │   └── com/myshop/
-    │       ├── domain/       # 엔티티
-    │       ├── repository/   # 레포지토리
-    │       ├── service/      # 비즈니스 로직
-    │       ├── controller/   # REST API
-    │       ├── dto/          # 데이터 전송 객체
-    │       ├── config/       # 설정
-    │       └── security/     # 인증/인가
-    └── src/main/resources/
-        ├── application.yml
-        └── mapper/           # MyBatis XML
+    ├── index.js
+    ├── index.css
+    ├── App.js
+    ├── api/                          # API 통신 모듈
+    │   ├── client.js                 # Axios 클라이언트 설정
+    │   ├── auth.api.js               # 인증 API
+    │   ├── member.api.js             # 회원 API
+    │   ├── buyer.api.js              # 구매자 API (주문/결제)
+    │   ├── product.api.js            # 상품 API
+    │   └── seller.api.js             # 판매자 API
+    ├── components/                   # 재사용 컴포넌트
+    │   ├── common/                   # 공통 컴포넌트
+    │   ├── layout/                   # 레이아웃 컴포넌트
+    │   ├── product/                  # 상품 컴포넌트
+    │   │   ├── ProductCard.jsx       # 상품 카드
+    │   │   └── ProductGrid.jsx       # 상품 그리드
+    │   ├── order/                    # 주문 컴포넌트
+    │   │   ├── AddressForm.jsx       # 배송지 입력 폼
+    │   │   ├── OrderItemList.jsx     # 주문 상품 목록
+    │   │   └── OrderStatusBadge.jsx  # 주문 상태 뱃지
+    │   └── seller/                   # 판매자 컴포넌트
+    ├── pages/                        # 페이지 컴포넌트
+    │   ├── client/                   # 고객용 페이지
+    │   │   ├── HomePage.jsx          # 홈 페이지
+    │   │   ├── ProductListPage.jsx   # 상품 목록
+    │   │   ├── ProductDetailPage.jsx # 상품 상세
+    │   │   ├── OrderFormPage.jsx     # 주문서 작성
+    │   │   ├── PaymentPage.jsx       # 결제
+    │   │   ├── OrderCompletePage.jsx # 주문 완료
+    │   │   ├── MyOrdersPage.jsx      # 내 주문 목록
+    │   │   └── OrderDetailPage.jsx   # 주문 상세
+    │   ├── seller/                   # 판매자용 페이지
+    │   │   ├── DashboardPage.jsx     # 대시보드
+    │   │   └── ProductListPage.jsx   # 상품 관리
+    │   └── auth/                     # 인증 페이지
+    ├── hooks/                        # 커스텀 훅
+    ├── utils/                        # 유틸리티
+    └── styles/                       # 스타일
 ```
 
 ---
@@ -210,14 +215,16 @@ npm run build
 
 ### 고객용 쇼핑몰
 
-| 화면 | 설명 |
-|------|------|
-| 홈 | 배너, 카테고리, 상품 섹션 |
-| 상품 목록 | 필터, 정렬, 상품 그리드 |
-| 상품 상세 | 이미지, 정보, 리뷰, 구매 |
-| 장바구니 | 슬라이드 패널 |
-| 결제 | 배송정보, 결제수단, 금액 |
-| 로그인 | 이메일, 소셜 로그인 |
+| 화면 | 파일 경로 | 설명 | 상태 |
+|------|-----------|------|------|
+| 홈 | `/pages/client/HomePage.jsx` | 배너, 카테고리, 상품 섹션 | ✅ |
+| 상품 목록 | `/pages/client/ProductListPage.jsx` | 상품 그리드, 페이지네이션 | ✅ |
+| 상품 상세 | `/pages/client/ProductDetailPage.jsx` | 이미지 갤러리, 상품 정보, 구매 | ✅ |
+| 주문서 작성 | `/pages/client/OrderFormPage.jsx` | 배송지 입력, 주문 상품 확인 | ✅ |
+| 결제 | `/pages/client/PaymentPage.jsx` | 결제 수단 선택, 결제 진행 | ✅ |
+| 주문 완료 | `/pages/client/OrderCompletePage.jsx` | 주문 완료 안내, 주문 정보 | ✅ |
+| 내 주문 목록 | `/pages/client/MyOrdersPage.jsx` | 주문 목록, 상태별 필터 | ✅ |
+| 주문 상세 | `/pages/client/OrderDetailPage.jsx` | 주문 상세 정보, 취소 | ✅ |
 
 ### 관리자 대시보드
 
@@ -232,65 +239,111 @@ npm run build
 
 ---
 
-## 🔌 API 설계
+## 🔌 API 연동
 
-### 인증 API
-```
-POST   /api/auth/login         # 로그인
-POST   /api/auth/logout        # 로그아웃
-POST   /api/auth/refresh       # 토큰 갱신
-```
+### API 모듈 구조
+모든 API 호출은 `/src/api` 디렉토리의 모듈을 통해 관리됩니다.
 
-### 회원 API
-```
-POST   /api/members/signup      # 회원가입
-```
+| 파일 | 설명 | 주요 함수 |
+|------|------|-----------|
+| `client.js` | Axios 인스턴스 설정, 인터셉터 | - |
+| `auth.api.js` | 인증 API | `login`, `reissue`, `getMe` |
+| `member.api.js` | 회원 API | `signup` |
+| `buyer.api.js` | 구매자 API | `getProducts`, `getProductDetail`, `createOrder`, `getMyOrders`, `getOrderDetail`, `cancelOrder`, `requestPayment`, `confirmPayment` |
+| `product.api.js` | 상품 API (공통) | - |
+| `seller.api.js` | 판매자 API | `getProducts`, `createProduct`, `updateProduct`, `deleteProduct`, `uploadImage`, `getDashboardStats`, `getRecentOrders` |
 
-### 상품 API
-```
-GET    /api/products           # 상품 목록 조회
-GET    /api/products/{id}      # 상품 상세 조회
-POST   /api/products           # 상품 등록 (판매자)
-PUT    /api/products/{id}      # 상품 수정 (판매자)
-DELETE /api/products/{id}      # 상품 삭제 (판매자)
-GET    /api/products/category/{category}  # 카테고리별 조회
-```
+### 구매자 API (buyer.api.js)
 
-### 주문 API
-```
-GET    /api/orders             # 주문 목록 조회
-GET    /api/orders/{id}        # 주문 상세 조회
-POST   /api/orders             # 주문 생성
-PUT    /api/orders/{id}/status # 주문 상태 변경 (판매자)
-POST   /api/orders/{id}/cancel # 주문 취소
+#### 상품 조회
+```javascript
+// 상품 목록 조회 (공개)
+getProducts(page, size)
+
+// 상품 상세 조회 (공개)
+getProductDetail(productSeq)
 ```
 
-### 장바구니 API
-```
-GET    /api/cart               # 장바구니 조회
-POST   /api/cart               # 장바구니 추가
-PUT    /api/cart/{id}          # 수량 변경
-DELETE /api/cart/{id}          # 항목 삭제
+#### 주문 관리
+```javascript
+// 주문 생성
+createOrder(orderData)
+
+// 내 주문 목록 조회
+getMyOrders(page, size)
+
+// 주문 상세 조회
+getOrderDetail(orderSeq)
+
+// 주문 취소
+cancelOrder(orderSeq, reason)
 ```
 
-### 정산 API
-```
-GET    /api/settlements        # 정산 내역 조회 (판매자)
-GET    /api/settlements/{id}   # 정산 상세 조회 (판매자)
+#### 결제
+```javascript
+// 결제 요청
+requestPayment(paymentData)
+
+// 결제 확인
+confirmPayment(paymentSeq)
 ```
 
-### 통계 API
+### 백엔드 API 엔드포인트
+
+#### 인증 API
 ```
-GET    /api/stats/sales        # 매출 통계 (판매자)
-GET    /api/stats/products     # 상품 통계 (판매자)
-GET    /api/stats/orders       # 주문 통계 (판매자)
+POST   /v1/auth/login          # 로그인
+POST   /v1/auth/reissue        # 토큰 재발급
+GET    /v1/auth/me             # 내 정보 조회
 ```
 
-### AI API
+#### 회원 API
 ```
-POST   /api/ai/description     # AI 상품 설명 생성
-POST   /api/ai/chat            # AI 챗봇 응답
+POST   /v1/members/signup      # 회원가입
 ```
+
+#### 구매자 상품 API (공개)
+```
+GET    /v1/products            # 상품 목록 조회
+GET    /v1/products/{seq}      # 상품 상세 조회
+```
+
+#### 주문 API (인증 필요)
+```
+POST   /v1/orders              # 주문 생성
+GET    /v1/orders              # 내 주문 목록
+GET    /v1/orders/{orderSeq}   # 주문 상세
+POST   /v1/orders/{orderSeq}/cancel  # 주문 취소
+```
+
+#### 결제 API (인증 필요, Mock)
+```
+POST   /v1/payments            # 결제 요청
+POST   /v1/payments/{paymentSeq}/confirm  # 결제 확인
+```
+
+#### 판매자 상품 API (SELLER 권한)
+```
+GET    /v1/seller/products     # 내 상품 목록
+GET    /v1/seller/products/{seq}  # 내 상품 상세
+POST   /v1/seller/products     # 상품 등록
+PUT    /v1/seller/products/{seq}  # 상품 수정
+DELETE /v1/seller/products/{seq}  # 상품 삭제
+POST   /v1/seller/products/{seq}/images  # 상품 이미지 업로드
+```
+
+#### 판매자 대시보드 API (SELLER 권한)
+```
+GET    /v1/seller/dashboard/stats  # 대시보드 통계
+GET    /v1/seller/orders/recent    # 최근 주문 조회
+```
+
+#### 카테고리 API (공개)
+```
+GET    /v1/categories          # 전체 카테고리 목록
+```
+
+자세한 API 명세는 [백엔드 API 문서](/Users/bh/home/10.project/MY_SHOP/.agent/API_SPECIFICATION.md)를 참조하세요.
 
 ---
 
@@ -383,31 +436,46 @@ CREATE TABLE settlements (
 
 ## 📅 개발 로드맵
 
-### Phase 1: MVP (현재)
+### Phase 1: MVP - 주문/결제 (완료)
 - [x] 프론트엔드 UI 프로토타입
 - [x] 고객용 쇼핑몰 화면
 - [x] 관리자 대시보드 화면
-- [ ] 백엔드 API 개발
-- [ ] 데이터베이스 연동
-- [ ] 사용자 인증 구현
+- [x] 백엔드 API 개발
+  - [x] 구매자 상품 API (공개)
+  - [x] 주문 API (인증 필요)
+  - [x] 결제 API (Mock)
+- [x] 프론트엔드 페이지 구현
+  - [x] 상품 목록/상세 페이지
+  - [x] 주문서 작성 페이지
+  - [x] 결제 페이지
+  - [x] 주문 완료/목록/상세 페이지
+- [x] 재사용 컴포넌트 구현
+  - [x] ProductCard, ProductGrid
+  - [x] AddressForm, OrderItemList, OrderStatusBadge
+- [x] API 연동 모듈 (buyer.api.js)
+- [x] 사용자 인증 구현 (JWT)
 
-### Phase 2: 핵심 기능
-- [ ] 실제 결제 연동 (PG사)
-- [ ] 이미지 업로드 (S3)
-- [ ] 검색 기능 고도화
+### Phase 2: 핵심 기능 (예정)
+- [ ] 실제 결제 연동 (PG사 - 토스페이먼츠/카카오페이)
+- [ ] 이미지 업로드 (S3/CloudFlare)
+- [ ] 장바구니 기능
+- [ ] 검색 기능 고도화 (ElasticSearch)
 - [ ] 리뷰 시스템
-- [ ] 알림 시스템
+- [ ] 알림 시스템 (WebSocket/SSE)
+- [ ] 찜하기 기능
 
-### Phase 3: AI 기능
+### Phase 3: AI 기능 (예정)
 - [ ] AI 상품 설명 생성 (OpenAI/Claude API)
 - [ ] AI 챗봇 고객 응대
-- [ ] 추천 시스템
+- [ ] 개인화 추천 시스템
 
-### Phase 4: 고도화
-- [ ] 성능 최적화
-- [ ] SEO 최적화
+### Phase 4: 고도화 (예정)
+- [ ] 성능 최적화 (캐싱, CDN)
+- [ ] SEO 최적화 (SSR/SSG)
+- [ ] 모바일 반응형 개선
 - [ ] 모바일 앱 (React Native)
 - [ ] 어드민 기능 확장
+- [ ] 통계 및 분석 대시보드
 
 ---
 
