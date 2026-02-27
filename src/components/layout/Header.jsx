@@ -62,6 +62,9 @@ function Header() {
                                     <ShoppingCartIcon className="h-6 w-6" />
                                     {/* 장바구니 배지는 Phase 2에서 구현 */}
                                 </Link>
+                                <Link to="/my-orders" className="text-gray-700 hover:text-blue-600 transition-colors">
+                                    주문내역
+                                </Link>
                                 <Link to="/my-page" className="text-gray-700 hover:text-blue-600 transition-colors">
                                     마이페이지
                                 </Link>
@@ -142,6 +145,13 @@ function Header() {
                                     onClick={() => setMobileMenuOpen(false)}
                                 >
                                     장바구니
+                                </Link>
+                                <Link
+                                    to="/my-orders"
+                                    className="block text-gray-700 hover:text-blue-600 py-2"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    주문내역
                                 </Link>
                                 <Link
                                     to="/my-page"

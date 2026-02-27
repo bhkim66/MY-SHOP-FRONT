@@ -7,8 +7,17 @@ import HomePage from '../pages/client/HomePage';
 import MainLayout from '../components/layout/MainLayout';
 import SellerLayout from '../components/layout/SellerLayout';
 import DashboardPage from '../pages/seller/DashboardPage';
-import ProductListPage from '../pages/seller/ProductListPage';
+import SellerProductListPage from '../pages/seller/ProductListPage';
 import ProductFormPage from '../pages/seller/ProductFormPage';
+
+// 구매자 페이지
+import ProductListPage from '../pages/client/ProductListPage';
+import ProductDetailPage from '../pages/client/ProductDetailPage';
+import OrderFormPage from '../pages/client/OrderFormPage';
+import PaymentPage from '../pages/client/PaymentPage';
+import OrderCompletePage from '../pages/client/OrderCompletePage';
+import MyOrdersPage from '../pages/client/MyOrdersPage';
+import OrderDetailPage from '../pages/client/OrderDetailPage';
 
 // 임시 플레이스홀더 컴포넌트
 const Placeholder = ({ title }) => (
@@ -36,10 +45,50 @@ function AppRouter() {
 
                 {/* 공개 라우트 */}
                 <Route path="/home" element={<HomePage />} />
-                <Route path="/products" element={<Placeholder title="상품 목록" />} />
-                <Route path="/products/:id" element={<Placeholder title="상품 상세" />} />
+                <Route path="/products" element={<ProductListPage />} />
+                <Route path="/products/:id" element={<ProductDetailPage />} />
 
                 {/* 보호된 라우트 (로그인 필요) */}
+                <Route
+                    path="/order"
+                    element={
+                        <PrivateRoute>
+                            <OrderFormPage />
+                        </PrivateRoute>
+                    }
+                />
+                <Route
+                    path="/payment"
+                    element={
+                        <PrivateRoute>
+                            <PaymentPage />
+                        </PrivateRoute>
+                    }
+                />
+                <Route
+                    path="/order/complete"
+                    element={
+                        <PrivateRoute>
+                            <OrderCompletePage />
+                        </PrivateRoute>
+                    }
+                />
+                <Route
+                    path="/my-orders"
+                    element={
+                        <PrivateRoute>
+                            <MyOrdersPage />
+                        </PrivateRoute>
+                    }
+                />
+                <Route
+                    path="/my-orders/:orderSeq"
+                    element={
+                        <PrivateRoute>
+                            <OrderDetailPage />
+                        </PrivateRoute>
+                    }
+                />
                 <Route
                     path="/my-page"
                     element={
@@ -60,7 +109,7 @@ function AppRouter() {
                 >
                     <Route index element={<Navigate to="/seller/dashboard" replace />} />
                     <Route path="dashboard" element={<DashboardPage />} />
-                    <Route path="products" element={<ProductListPage />} />
+                    <Route path="products" element={<SellerProductListPage />} />
                     <Route path="products/new" element={<ProductFormPage />} />
                     <Route path="products/:id" element={<ProductFormPage />} />
                     <Route path="orders" element={<SellerPlaceholder title="주문 관리" />} />
