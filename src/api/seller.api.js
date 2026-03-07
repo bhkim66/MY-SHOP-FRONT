@@ -17,8 +17,8 @@ export const getProducts = async (params = {}) => {
     if (params.page !== undefined) queryParams.append('page', params.page);
     if (params.size !== undefined) queryParams.append('size', params.size);
     if (params.status && params.status !== 'ALL') queryParams.append('status', params.status);
-    if (params.categoryCode && params.categoryCode !== 'ALL') queryParams.append('categoryCode', params.categoryCode);
-    if (params.search) queryParams.append('keyword', params.search);
+    if (params.categorySeq && params.categorySeq !== 'ALL') queryParams.append('categorySeq', params.categorySeq);
+    if (params.search) queryParams.append('productName', params.search);
 
     const queryString = queryParams.toString();
     return await apiClient.get(`${API_ENDPOINTS.SELLER.PRODUCTS.LIST}${queryString ? `?${queryString}` : ''}`);
@@ -71,5 +71,42 @@ export const uploadImage = async (file) => {
         headers: {
             'Content-Type': 'multipart/form-data',
         },
+    });
+};
+
+// 주문 관리
+// 주문 목록 조회
+export const getSellerOrders = async (params = {}) => {
+    const queryParams = new URLSearchParams();
+    if (params.page !== undefined) queryParams.append('page', params.page);
+    if (params.size !== undefined) queryParams.append('size', params.size);
+    if (params.status && params.status !== 'ALL') queryParams.append('status', params.status);
+    if (params.startDate) queryParams.append('startDate', params.startDate);
+    if (params.endDate) queryParams.append('endDate', params.endDate);
+
+    const queryString = queryParams.toString();
+    return await apiClient.get(`${API_ENDPOINTS.SELLER.ORDERS.LIST}${queryString ? `?${queryString}` : ''}`);
+};
+
+// 주문 상세 조회
+export const getSellerOrderDetail = async (orderSeq) => {
+    return await apiClient.get(API_ENDPOINTS.SELLER.ORDERS.DETAIL(orderSeq));
+};
+
+// 주문 상태 변경
+export const updateOrderStatus = async (orderSeq, status, reason = '', shippingInfo = null) => {
+    const payload = {
+        status,
+        ...(reason && { reason }),
+        ...(shippingInfo && { shippingInfo }),
+    };
+    return await apiClient.put(API_ENDPOINTS.SELLER.ORDERS.UPDATE_STATUS(orderSeq), payload);
+};
+
+// 배송 정보 등록
+export const registerShipment = async (orderSeq, shippingCompany, trackingNumber) => {
+    return await updateOrderStatus(orderSeq, 'SHIPPED', '', {
+        shippingCompany,
+        trackingNumber,
     });
 };

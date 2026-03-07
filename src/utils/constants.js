@@ -26,6 +26,7 @@ export const API_ENDPOINTS = {
         UPDATE: (id) => `/cart/${id}`,
         REMOVE: (id) => `/cart/${id}`,
     },
+    CATEGORIES: '/categories',
     SELLER: {
         DASHBOARD: {
             STATS: '/seller/dashboard/stats',

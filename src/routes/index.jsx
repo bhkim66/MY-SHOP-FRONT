@@ -9,6 +9,7 @@ import SellerLayout from '../components/layout/SellerLayout';
 import DashboardPage from '../pages/seller/DashboardPage';
 import SellerProductListPage from '../pages/seller/ProductListPage';
 import ProductFormPage from '../pages/seller/ProductFormPage';
+import SellerOrderListPage from '../pages/seller/SellerOrderListPage';
 
 // 구매자 페이지
 import ProductListPage from '../pages/client/ProductListPage';
@@ -112,7 +113,7 @@ function AppRouter() {
                     <Route path="products" element={<SellerProductListPage />} />
                     <Route path="products/new" element={<ProductFormPage />} />
                     <Route path="products/:id" element={<ProductFormPage />} />
-                    <Route path="orders" element={<SellerPlaceholder title="주문 관리" />} />
+                    <Route path="orders" element={<SellerOrderListPage />} />
                     <Route path="settings" element={<SellerPlaceholder title="설정" />} />
                 </Route>
 

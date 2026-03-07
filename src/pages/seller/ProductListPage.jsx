@@ -4,16 +4,18 @@ import ProductTable from '../../components/seller/ProductTable';
 import Select from '../../components/common/Select';
 import Modal from '../../components/common/Modal';
 import * as sellerAPI from '../../api/seller.api';
-import { PRODUCT_STATUS_OPTIONS, CATEGORY_OPTIONS } from '../../utils/constants';
+import { getCategories } from '../../api/product.api';
+import { PRODUCT_STATUS_OPTIONS } from '../../utils/constants';
 
 function ProductListPage() {
     const [products, setProducts] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [filters, setFilters] = useState({
         status: 'ALL',
-        categoryCode: 'ALL',
+        categorySeq: 'ALL',
         search: '',
     });
+    const [categoryOptions, setCategoryOptions] = useState([]);
     const [pagination, setPagination] = useState({
         page: 0,
         totalPages: 0,
@@ -32,15 +34,31 @@ function ProductListPage() {
         ...PRODUCT_STATUS_OPTIONS,
     ];
 
-    const categoryOptions = [
-        { value: 'ALL', label: '전체 카테고리' },
-        ...CATEGORY_OPTIONS,
-    ];
+    useEffect(() => {
+        loadCategories();
+    }, []);
 
     useEffect(() => {
         loadProducts();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [filters, pagination.page]);
+
+    const loadCategories = async () => {
+        try {
+            const categories = await getCategories();
+            const options = [
+                { value: 'ALL', label: '전체 카테고리' },
+                ...categories.map((cat) => ({
+                    value: String(cat.seq),
+                    label: `[${cat.seq}] ${cat.categoryName}`,
+                })),
+            ];
+            setCategoryOptions(options);
+        } catch (error) {
+            console.error('Failed to load categories:', error);
+            setCategoryOptions([{ value: 'ALL', label: '전체 카테고리' }]);
+        }
+    };
 
     const loadProducts = async () => {
         setIsLoading(true);
@@ -210,11 +228,11 @@ function ProductListPage() {
                         }
                     />
                     <Select
-                        name="categoryCode"
+                        name="categorySeq"
                         options={categoryOptions}
-                        value={filters.categoryCode}
+                        value={filters.categorySeq}
                         onChange={(e) =>
-                            handleFilterChange('categoryCode', e.target.value)
+                            handleFilterChange('categorySeq', e.target.value)
                         }
                     />
                     <div className="flex items-center text-sm text-gray-500">
