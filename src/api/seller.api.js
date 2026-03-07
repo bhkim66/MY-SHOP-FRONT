@@ -17,8 +17,8 @@ export const getProducts = async (params = {}) => {
     if (params.page !== undefined) queryParams.append('page', params.page);
     if (params.size !== undefined) queryParams.append('size', params.size);
     if (params.status && params.status !== 'ALL') queryParams.append('status', params.status);
-    if (params.categoryCode && params.categoryCode !== 'ALL') queryParams.append('categoryCode', params.categoryCode);
-    if (params.search) queryParams.append('keyword', params.search);
+    if (params.categorySeq && params.categorySeq !== 'ALL') queryParams.append('categorySeq', params.categorySeq);
+    if (params.search) queryParams.append('productName', params.search);
 
     const queryString = queryParams.toString();
     return await apiClient.get(`${API_ENDPOINTS.SELLER.PRODUCTS.LIST}${queryString ? `?${queryString}` : ''}`);
