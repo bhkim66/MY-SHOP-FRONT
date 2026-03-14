@@ -35,7 +35,7 @@ function ProductFormPage() {
     const uploadImages = async (productSeq, images) => {
         const uploadPromises = images.map(async (image, index) => {
             if (image instanceof File) {
-                const imageType = index === 0 ? 'THUMBNAIL' : 'DETAIL';
+                const imageType = index === 0 ? 'MAIN' : 'DETAIL';
                 try {
                     await sellerAPI.uploadProductImage(productSeq, image, imageType);
                 } catch (error) {
@@ -57,6 +57,16 @@ function ProductFormPage() {
                 stockQty: Number(data.stockQty) || 0,
                 minOrderQty: Number(data.minOrderQty) || 1,
                 status: data.status,
+                options: (data.options || []).flatMap((opt) =>
+                    opt.values
+                        .filter((v) => v.value.trim() !== '')
+                        .map((v) => ({
+                            optionGroup: opt.name,
+                            optionValue: v.value,
+                            additionalPrice: v.additionalPrice || 0,
+                            stockQty: v.stock || 0,
+                        }))
+                ),
             };
 
             if (isEdit) {
