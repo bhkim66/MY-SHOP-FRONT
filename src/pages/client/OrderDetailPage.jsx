@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import MainLayout from '../../components/layout/MainLayout';
 import OrderStatusBadge from '../../components/order/OrderStatusBadge';
-import { getOrderDetail, cancelOrder } from '../../api/buyer.api';
+import { getOrderDetail, cancelOrder, getShipment } from '../../api/buyer.api';
 import { useAuth } from '../../hooks/useAuth';
 
 function OrderDetailPage() {
@@ -232,6 +232,47 @@ function OrderDetailPage() {
                             )}
                         </div>
                     </div>
+
+                    {/* 배송 추적 정보 */}
+                    {order.shipmentInfo && (
+                        <div className="bg-white rounded-lg border border-gray-200 p-6">
+                            <h2 className="text-lg font-semibold text-gray-900 mb-4">배송 추적</h2>
+                            <div className="space-y-3 text-sm">
+                                <div className="flex justify-between">
+                                    <span className="text-gray-500">배송 상태</span>
+                                    <span className="font-medium">
+                                        {order.shipmentInfo.shippingStatus === 'PREPARING' && '배송 준비중'}
+                                        {order.shipmentInfo.shippingStatus === 'SHIPPING' && '배송중'}
+                                        {order.shipmentInfo.shippingStatus === 'DELIVERED' && '배송 완료'}
+                                    </span>
+                                </div>
+                                {order.shipmentInfo.shippingCompany && (
+                                    <div className="flex justify-between">
+                                        <span className="text-gray-500">배송사</span>
+                                        <span className="font-medium">{order.shipmentInfo.shippingCompany}</span>
+                                    </div>
+                                )}
+                                {order.shipmentInfo.trackingNumber && (
+                                    <div className="flex justify-between">
+                                        <span className="text-gray-500">운송장 번호</span>
+                                        <span className="font-medium font-mono">{order.shipmentInfo.trackingNumber}</span>
+                                    </div>
+                                )}
+                                {order.shipmentInfo.shippedAt && (
+                                    <div className="flex justify-between">
+                                        <span className="text-gray-500">발송일</span>
+                                        <span className="font-medium">{formatDate(order.shipmentInfo.shippedAt)}</span>
+                                    </div>
+                                )}
+                                {order.shipmentInfo.deliveredAt && (
+                                    <div className="flex justify-between">
+                                        <span className="text-gray-500">배송 완료일</span>
+                                        <span className="font-medium">{formatDate(order.shipmentInfo.deliveredAt)}</span>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
 
                     {/* 결제 정보 */}
                     <div className="bg-white rounded-lg border border-gray-200 p-6">

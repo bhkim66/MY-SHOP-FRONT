@@ -1,14 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import MainLayout from '../../components/layout/MainLayout';
-import { getProductDetail } from '../../api/buyer.api';
+import { getProductDetail, addToCart } from '../../api/buyer.api';
 import { useAuth } from '../../hooks/useAuth';
+import useCartStore from '../../store/cartStore';
 
 function ProductDetailPage() {
     const { id } = useParams();
     const navigate = useNavigate();
     const { isAuthenticated } = useAuth();
+    const { incrementCartCount } = useCartStore();
     const [product, setProduct] = useState(null);
+    const [addingToCart, setAddingToCart] = useState(false);
     const [loading, setLoading] = useState(true);
     const [quantity, setQuantity] = useState(1);
     const [selectedImage, setSelectedImage] = useState(0);
@@ -38,6 +41,25 @@ function ProductDetailPage() {
         if (product?.maxOrderQty && newQty > product.maxOrderQty) return;
         if (newQty > product?.stockQty) return;
         setQuantity(newQty);
+    };
+
+    const handleAddToCart = async () => {
+        if (!isAuthenticated) {
+            alert('로그인이 필요합니다.');
+            navigate('/login', { state: { from: `/products/${id}` } });
+            return;
+        }
+        setAddingToCart(true);
+        try {
+            await addToCart({ productSeq: product.seq, qty: quantity });
+            incrementCartCount();
+            alert('장바구니에 담았습니다.');
+        } catch (error) {
+            console.error('장바구니 담기 실패:', error);
+            alert(error.response?.data?.message || '장바구니 담기에 실패했습니다.');
+        } finally {
+            setAddingToCart(false);
+        }
     };
 
     const handleBuyNow = () => {
@@ -228,6 +250,13 @@ function ProductDetailPage() {
 
                         {/* 구매 버튼 */}
                         <div className="flex gap-4">
+                            <button
+                                onClick={handleAddToCart}
+                                disabled={product.stockQty <= 0 || addingToCart}
+                                className="flex-1 border-2 border-blue-600 text-blue-600 py-4 rounded-lg font-semibold hover:bg-blue-50 transition-colors disabled:border-gray-400 disabled:text-gray-400 disabled:cursor-not-allowed"
+                            >
+                                {addingToCart ? '담는 중...' : '장바구니 담기'}
+                            </button>
                             <button
                                 onClick={handleBuyNow}
                                 disabled={product.stockQty <= 0}

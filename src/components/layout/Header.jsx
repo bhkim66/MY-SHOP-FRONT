@@ -1,13 +1,21 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
+import useCartStore from '../../store/cartStore';
 import { MagnifyingGlassIcon, ShoppingCartIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 
 function Header() {
     const navigate = useNavigate();
     const { isAuthenticated, logout } = useAuth();
+    const { cartCount, fetchCartCount } = useCartStore();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            fetchCartCount();
+        }
+    }, [isAuthenticated, fetchCartCount]);
 
     const handleSearch = (e) => {
         e.preventDefault();
@@ -60,7 +68,11 @@ function Header() {
                             <>
                                 <Link to="/cart" className="relative text-gray-700 hover:text-blue-600 transition-colors">
                                     <ShoppingCartIcon className="h-6 w-6" />
-                                    {/* 장바구니 배지는 Phase 2에서 구현 */}
+                                    {cartCount > 0 && (
+                                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                                            {cartCount > 9 ? '9+' : cartCount}
+                                        </span>
+                                    )}
                                 </Link>
                                 <Link to="/my-orders" className="text-gray-700 hover:text-blue-600 transition-colors">
                                     주문내역

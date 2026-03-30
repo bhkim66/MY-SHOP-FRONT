@@ -19,6 +19,7 @@ import PaymentPage from '../pages/client/PaymentPage';
 import OrderCompletePage from '../pages/client/OrderCompletePage';
 import MyOrdersPage from '../pages/client/MyOrdersPage';
 import OrderDetailPage from '../pages/client/OrderDetailPage';
+import CartPage from '../pages/client/CartPage';
 
 // 임시 플레이스홀더 컴포넌트
 const Placeholder = ({ title }) => (
@@ -87,6 +88,14 @@ function AppRouter() {
                     element={
                         <PrivateRoute>
                             <OrderDetailPage />
+                        </PrivateRoute>
+                    }
+                />
+                <Route
+                    path="/cart"
+                    element={
+                        <PrivateRoute>
+                            <CartPage />
                         </PrivateRoute>
                     }
                 />
