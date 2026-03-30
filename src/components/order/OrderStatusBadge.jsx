@@ -16,7 +16,7 @@ const STATUS_CONFIG = {
         bgColor: 'bg-indigo-100',
         textColor: 'text-indigo-800',
     },
-    SHIPPED: {
+    SHIPPING: {
         label: '배송중',
         bgColor: 'bg-purple-100',
         textColor: 'text-purple-800',

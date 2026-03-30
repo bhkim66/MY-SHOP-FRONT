@@ -94,18 +94,19 @@ export const getSellerOrderDetail = async (orderSeq) => {
 };
 
 // 주문 상태 변경
-export const updateOrderStatus = async (orderSeq, status, reason = '', shippingInfo = null) => {
+export const updateOrderStatus = async (orderSeq, status, reason = '', shippingCompany = '', trackingNumber = '') => {
     const payload = {
         status,
         ...(reason && { reason }),
-        ...(shippingInfo && { shippingInfo }),
+        ...(shippingCompany && { shippingCompany }),
+        ...(trackingNumber && { trackingNumber }),
     };
-    return await apiClient.put(API_ENDPOINTS.SELLER.ORDERS.UPDATE_STATUS(orderSeq), payload);
+    return await apiClient.patch(API_ENDPOINTS.SELLER.ORDERS.UPDATE_STATUS(orderSeq), payload);
 };
 
 // 배송 정보 등록
 export const registerShipment = async (orderSeq, shippingCompany, trackingNumber) => {
-    return await updateOrderStatus(orderSeq, 'SHIPPED', '', {
+    return await apiClient.post(API_ENDPOINTS.SELLER.ORDERS.SHIPMENT(orderSeq), {
         shippingCompany,
         trackingNumber,
     });

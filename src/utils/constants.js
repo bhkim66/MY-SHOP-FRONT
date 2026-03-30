@@ -45,6 +45,7 @@ export const API_ENDPOINTS = {
             RECENT: '/seller/orders/recent',
             DETAIL: (id) => `/seller/orders/${id}`,
             UPDATE_STATUS: (id) => `/seller/orders/${id}/status`,
+            SHIPMENT: (id) => `/seller/orders/${id}/shipment`,
         },
         UPLOAD: {
             IMAGE: '/seller/upload/image',
@@ -57,7 +58,7 @@ export const ORDER_STATUS = {
     PENDING: '결제 대기',
     CONFIRMED: '주문 확정',
     PREPARING: '배송 준비중',
-    SHIPPED: '배송중',
+    SHIPPING: '배송중',
     DELIVERED: '배송 완료',
     CANCELED: '취소',
     REFUNDED: '환불',

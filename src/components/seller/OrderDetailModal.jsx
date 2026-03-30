@@ -38,7 +38,7 @@ function OrderDetailModal({ orderSeq, isOpen, onClose, onStatusChanged }) {
 
         setIsUpdating(true);
         try {
-            if (newStatus === 'SHIPPED') {
+            if (newStatus === 'SHIPPING') {
                 setShowShippingForm(true);
                 setIsUpdating(false);
                 return;
@@ -68,6 +68,13 @@ function OrderDetailModal({ orderSeq, isOpen, onClose, onStatusChanged }) {
         try {
             await sellerAPI.registerShipment(
                 orderSeq,
+                shippingData.shippingCompany,
+                shippingData.trackingNumber
+            );
+            await sellerAPI.updateOrderStatus(
+                orderSeq,
+                'SHIPPING',
+                '',
                 shippingData.shippingCompany,
                 shippingData.trackingNumber
             );
@@ -103,10 +110,10 @@ function OrderDetailModal({ orderSeq, isOpen, onClose, onStatusChanged }) {
                 ];
             case 'PREPARING':
                 return [
-                    { label: '배송 시작', status: 'SHIPPED' },
+                    { label: '배송 시작', status: 'SHIPPING' },
                     { label: '주문 취소', status: 'CANCELED', variant: 'danger' },
                 ];
-            case 'SHIPPED':
+            case 'SHIPPING':
                 return [{ label: '배송 완료', status: 'DELIVERED' }];
             default:
                 return [];
